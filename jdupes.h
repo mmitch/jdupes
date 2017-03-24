@@ -190,6 +190,8 @@ typedef struct _file {
  #ifndef NO_HARDLINKS
   DWORD nlink;
  #endif
+#else
+  nlink_t nlink;
 #endif
 } file_t;
 

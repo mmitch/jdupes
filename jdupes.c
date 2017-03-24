@@ -422,6 +422,7 @@ extern inline int getfilestats(file_t * const restrict file)
   file->device = s.st_dev;
   file->mtime = s.st_mtime;
   file->mode = s.st_mode;
+  file->nlink = s.st_nlink;
  #ifndef NO_PERMS
   file->uid = s.st_uid;
   file->gid = s.st_gid;
@@ -678,10 +679,8 @@ static void grokdir(const char * const restrict dir,
       newfile->inode = 0;
       newfile->mtime = 0;
       newfile->mode = 0;
-#ifdef ON_WINDOWS
- #ifndef NO_HARDLINKS
+#ifndef NO_HARDLINKS
       newfile->nlink = 0;
- #endif
 #endif
 #ifndef NO_PERMS
       newfile->uid = 0;
