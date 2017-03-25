@@ -23,6 +23,9 @@ extern void deletefiles(file_t *files, int prompt, FILE *tty)
   unsigned int number, sum, max, x;
   size_t i;
 
+  fprintf(stderr, "chosen action does not support multiple filenames yet - error out rather than breaking anything!\n");
+  exit(EXIT_FAILURE);
+
   groups = get_max_dupes(files, &max, NULL);
 
   max++;
