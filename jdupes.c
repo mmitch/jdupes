@@ -853,7 +853,7 @@ static void grokdir(const char * const restrict dir,
         } else {
           LOUD(fprintf(stderr, "grokdir: not a regular file: %s\n", newfilename->d_name);)
           string_free(newfilename->d_name);
-          string_free(newfile);
+          string_free(newfilename);
           string_free(newfile);
           continue;
         }
