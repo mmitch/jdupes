@@ -1372,7 +1372,7 @@ static void registerpair(file_t **matchlist, file_t *newmatch,
   if (matchlist == NULL || (*matchlist) == NULL || (*matchlist)->filename == NULL
       || newmatch == NULL || newmatch->filename == NULL
       || comparef == NULL) nullptr("registerpair()");
-  LOUD(fprintf(stderr, "registerpair: '%s', '%s'\n", (*matchlist)->filename->d_name, newmatch->filename>d_name);)
+  LOUD(fprintf(stderr, "registerpair: '%s', '%s'\n", (*matchlist)->filename->d_name, newmatch->filename->d_name);)
 
   SETFLAG((*matchlist)->flags, F_HAS_DUPES);
   back = NULL;
