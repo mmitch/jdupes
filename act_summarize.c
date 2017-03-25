@@ -13,8 +13,6 @@ extern void summarizematches(const file_t * restrict files)
   off_t numbytes = 0;
   int numfiles = 0;
 
-  oom("chosen action does not support multiple filenames yet - error out rather than breaking anything!");
-
   while (files != NULL) {
     file_t *tmpfile;
 
