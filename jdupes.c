@@ -39,6 +39,7 @@
 #include <errno.h>
 #include <libgen.h>
 #include <sys/time.h>
+#include <search.h>
 #include "jdupes.h"
 #include "string_malloc.h"
 #include "jody_hash.h"
@@ -222,6 +223,9 @@ static unsigned int tree_depth = 0;
 static unsigned int max_depth = 0;
 #endif
 
+/* reverse lookup {device, inode} -> file_t */
+static void *revtree = NULL;
+
 /* File tree head */
 static filetree_t *checktree = NULL;
 
@@ -356,6 +360,19 @@ static void update_progress(const char * const restrict msg, const int file_perc
   }
   time1.tv_sec = time2.tv_sec;
   return;
+}
+
+/* comparison function for reverse-lookup tree
+ * sort order: first by device then by inode */
+static int compare_revtree(const void * const node1, const void * const node2) {
+    const file_t * const file1 = (const file_t * const) node1;
+    const file_t * const file2 = (const file_t * const) node2;
+
+    int compare = (file1->device > file2->device) - (file1->device < file2->device);
+    if (compare == 0) {
+        compare = (file1->inode > file2->inode) - (file1->inode < file2->inode);
+    }
+    return compare;
 }
 
 /* Check file's stat() info to make sure nothing has changed
@@ -553,6 +570,7 @@ static void grokdir(const char * const restrict dir,
 {
   filename_t * restrict newfilename;
   file_t * restrict newfile;
+  file_t * restrict filerev;
 #ifndef NO_SYMLINKS
   static struct stat linfo;
 #endif
@@ -816,6 +834,27 @@ static void grokdir(const char * const restrict dir,
           *filelistp = newfile;
           filecount++;
           progress++;
+
+#ifndef NO_HARDLINKS
+          /* store reverse lookup {device, inode} -> file
+           *
+           * as this is used to detect hardlinked files,
+           * it is only needed if the link count is > 1 */
+	  if (newfile->nlink > 1) {
+	    filerev = tsearch(newfile, &revtree, compare_revtree);
+	    if (!filerev) oom("grokdir() reverse lookup tree node");
+	    
+	    filerev = *(file_t **) filerev; /* get pointer from tree node */
+	    if (filerev == newfile) {
+	      LOUD(fprintf(stderr, "new reverse lookup for %s\n", newfile->filename->d_name));
+	    } else {
+	      LOUD(fprintf(stderr, "known reverse lookup from %s to %s\n", newfile->filename->d_name, filerev->filename->d_name));
+	    }
+	  } else {
+	    LOUD(fprintf(stderr, "skip reverse lookup, nlink < 2\n"));
+	  }
+#endif
+
         } else {
           LOUD(fprintf(stderr, "grokdir: not a regular file: %s\n", newfilename->d_name);)
           string_free(newfilename->d_name);
