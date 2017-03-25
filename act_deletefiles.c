@@ -120,7 +120,7 @@ preserve_none:
             continue;
           }
 #endif
-          if (file_has_changed(dupelist[x])) {
+          if (file_has_changed(dupelist[x]->filename)) {
             printf("   [!] "); fwprint(stdout, dupelist[x]->filename->d_name, 0);
             printf("-- file changed since being scanned\n");
 #ifdef UNICODE
