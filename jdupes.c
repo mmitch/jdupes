@@ -686,7 +686,7 @@ static void grokdir(const char * const restrict dir,
       *tp = '\0';
       d_name_len++;
 
-      /* Allocate the filename_t, file_t and the d_name entries */
+      /* Allocate the file_t, filename_t and the d_name entries */
       newfile = (file_t *)string_malloc(sizeof(file_t));
       if (!newfile) oom("grokdir() file structure");
       newfilename = (filename_t *)string_malloc(sizeof(filename_t));
