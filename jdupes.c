@@ -694,6 +694,7 @@ static void grokdir(const char * const restrict dir,
       newfilename->d_name = (char *)string_malloc(dirlen + d_name_len + 2);
       if (!newfilename->d_name) oom("grokdir() filename");
 
+      newfilename->file = newfile;
       newfilename->user_order = user_dir_count;
       
       newfile->filename = newfilename;
@@ -829,7 +830,6 @@ static void grokdir(const char * const restrict dir,
 #else
         if (S_ISREG(newfile->mode)) {
 #endif
-          *filelistp = newfile;
           filecount++;
           progress++;
 
@@ -839,15 +839,35 @@ static void grokdir(const char * const restrict dir,
 	  if (newfile->nlink > 1) {
 	    filerev = tsearch(newfile, &revtree, compare_revtree);
 	    if (!filerev) oom("grokdir() reverse lookup tree node");
-	    
+
 	    filerev = *(file_t **) filerev; /* get pointer from tree node */
 	    if (filerev == newfile) {
+	      /* a fresh device/inode pair */
 	      LOUD(fprintf(stderr, "new reverse lookup for %s\n", newfile->filename->d_name));
-	    } else {
+
+	      /* store file_t normally */
+	      *filelistp = newfile;
+	    }
+
+	    else {
+	      /* already known device/inode pair */
 	      LOUD(fprintf(stderr, "known reverse lookup from %s to %s\n", newfile->filename->d_name, filerev->filename->d_name));
+
+	      /* throw away new file_t */
+	      string_free(newfile);
+
+	      /* add filename to existing file_t */
+	      newfilename->next = filerev->filename;
+	      filerev->filename = newfilename;
+
+	      /* add reverse lookup from filename to file */
+	      newfilename->file = filerev;
 	    }
 	  } else {
 	    LOUD(fprintf(stderr, "skip reverse lookup, nlink < 2\n"));
+
+	    /* store file_t normally */
+	    *filelistp = newfile;
 	  }
 
         } else {
