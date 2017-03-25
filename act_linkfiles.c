@@ -33,6 +33,8 @@ extern void linkfiles(file_t *files, const int hard)
   static filename_t * restrict dupename;
   static filename_t * restrict srcname;
 
+  oom("chosen action does not support multiple filenames yet - error out rather than breaking anything!");
+
   LOUD(fprintf(stderr, "Running linkfiles(%d)\n", hard);)
   curfile = files;
 
