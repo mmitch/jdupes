@@ -49,6 +49,8 @@ extern void dedupefiles(file_t * restrict files)
   int fd;
   int ret, status, readonly;
 
+  oom("chosen action does not support multiple filenames yet - error out rather than breaking anything!");
+
   LOUD(fprintf(stderr, "\nRunning dedupefiles()\n");)
 
   /* Find the largest dupe set, alloc space to hold structs for it */

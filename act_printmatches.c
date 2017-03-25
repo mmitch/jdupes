@@ -14,6 +14,8 @@ extern void printmatches(file_t * restrict files)
   filename_t * restrict filename;
   int printed = 0;
 
+  oom("chosen action does not support multiple filenames yet - error out rather than breaking anything!");
+
   while (files != NULL) {
     if (ISFLAG(files->flags, F_HAS_DUPES)) {
       printed = 1;
