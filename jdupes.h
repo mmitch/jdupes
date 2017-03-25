@@ -170,6 +170,8 @@ typedef enum {
 
 /* Per-file information unique to a filename */
 typedef struct _filename {
+  struct _filename *next;
+  struct _file *file;
   char *d_name;
   unsigned int user_order; /* Order of the originating command-line parameter */
 } filename_t;
