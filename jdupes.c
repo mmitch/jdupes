@@ -222,7 +222,7 @@ static unsigned int tree_depth = 0;
 static unsigned int max_depth = 0;
 #endif
 
-/* Inode tree head */
+/* File tree head */
 static filetree_t *checktree = NULL;
 
 /* Directory parameter position counter */
