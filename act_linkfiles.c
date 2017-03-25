@@ -31,6 +31,8 @@ extern void linkfiles(file_t *files, const int hard)
 #endif
   static char temp_path[PATHBUF_SIZE];
 
+  oom("chosen action does not support multiple filenames yet - error out rather than breaking anything!");
+
   LOUD(fprintf(stderr, "Running linkfiles(%d)\n", hard);)
   curfile = files;
 
