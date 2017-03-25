@@ -149,7 +149,7 @@ extern void linkfiles(file_t *files, const int hard)
         }
         /* Check file pairs for modification before linking */
         /* Safe linking: don't actually delete until the link succeeds */
-        i = file_has_changed(srcfile);
+        i = file_has_changed(srcfile->filename);
         if (i) {
           fprintf(stderr, "warning: source file modified since scanned; changing source file:\n[SRC] ");
           fwprint(stderr, dupelist[x]->filename->d_name, 1);
@@ -157,7 +157,7 @@ extern void linkfiles(file_t *files, const int hard)
           srcfile = dupelist[x];
           continue;
         }
-        if (file_has_changed(dupelist[x])) {
+        if (file_has_changed(dupelist[x]->filename)) {
           fprintf(stderr, "warning: target file modified since scanned, not linking:\n-//-> ");
           fwprint(stderr, dupelist[x]->filename->d_name, 1);
           continue;

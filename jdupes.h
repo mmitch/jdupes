@@ -168,8 +168,11 @@ typedef enum {
 /* For interactive deletion input */
 #define INPUT_SIZE 512
 
+struct _file; /* prototype */
+
 /* Per-file information unique to a filename */
 typedef struct _filename {
+  struct _file *file;
   char *d_name;
   unsigned int user_order; /* Order of the originating command-line parameter */
 } filename_t;
@@ -220,7 +223,7 @@ extern struct stat s;
 
 extern void oom(const char * const restrict msg);
 extern void nullptr(const char * restrict func);
-extern int file_has_changed(file_t * const restrict file);
+extern int file_has_changed(filename_t * const restrict filename);
 extern int getfilestats(file_t * const restrict file);
 extern int getdirstats(const char * const restrict name,
         jdupes_ino_t * const restrict file, dev_t * const restrict dev);

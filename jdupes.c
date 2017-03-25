@@ -377,35 +377,35 @@ static int compare_revtree(const void * const node1, const void * const node2) {
 
 /* Check file's stat() info to make sure nothing has changed
  * Returns 1 if changed, 0 if not changed, negative if error */
-extern int file_has_changed(file_t * const restrict file)
+extern int file_has_changed(filename_t * const restrict filename)
 {
-  if (file == NULL || file->filename == NULL || file->filename->d_name == NULL) nullptr("file_has_changed()");
-  LOUD(fprintf(stderr, "file_has_changed('%s')\n", file->filename->d_name);)
+  if (filename == NULL || filename->file == NULL || filename->d_name == NULL) nullptr("file_has_changed()");
+  LOUD(fprintf(stderr, "file_has_changed('%s')\n", filename->d_name);)
 
-  if (!ISFLAG(file->flags, F_VALID_STAT)) return -66;
+  if (!ISFLAG(filename->file->flags, F_VALID_STAT)) return -66;
 
 #ifdef ON_WINDOWS
   int i;
-  if ((i = win_stat(file->filename->d_name, &ws)) != 0) return i;
-  if (file->inode != ws.inode) return 1;
-  if (file->size != ws.size) return 1;
-  if (file->device != ws.device) return 1;
-  if (file->mtime != ws.mtime) return 1;
-  if (file->mode != ws.mode) return 1;
+  if ((i = win_stat(filename->d_name, &ws)) != 0) return i;
+  if (filename->file->inode != ws.inode) return 1;
+  if (filename->file->size != ws.size) return 1;
+  if (filename->file->device != ws.device) return 1;
+  if (filename->file->mtime != ws.mtime) return 1;
+  if (filename->file->mode != ws.mode) return 1;
 #else
-  if (stat(file->filename->d_name, &s) != 0) return -2;
-  if (file->inode != s.st_ino) return 1;
-  if (file->size != s.st_size) return 1;
-  if (file->device != s.st_dev) return 1;
-  if (file->mtime != s.st_mtime) return 1;
-  if (file->mode != s.st_mode) return 1;
+  if (stat(filename->d_name, &s) != 0) return -2;
+  if (filename->file->inode != s.st_ino) return 1;
+  if (filename->file->size != s.st_size) return 1;
+  if (filename->file->device != s.st_dev) return 1;
+  if (filename->file->mtime != s.st_mtime) return 1;
+  if (filename->file->mode != s.st_mode) return 1;
  #ifndef NO_PERMS
-  if (file->uid != s.st_uid) return 1;
-  if (file->gid != s.st_gid) return 1;
+  if (filename->file->uid != s.st_uid) return 1;
+  if (filename->file->gid != s.st_gid) return 1;
  #endif
  #ifndef NO_SYMLINKS
-  if (lstat(file->filename->d_name, &s) != 0) return -3;
-  if ((S_ISLNK(s.st_mode) > 0) ^ ISFLAG(file->flags, F_IS_SYMLINK)) return 1;
+  if (lstat(filename->d_name, &s) != 0) return -3;
+  if ((S_ISLNK(s.st_mode) > 0) ^ ISFLAG(filename->file->flags, F_IS_SYMLINK)) return 1;
  #endif
 #endif /* ON_WINDOWS */
 
