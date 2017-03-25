@@ -191,12 +191,12 @@ typedef struct _file {
   uid_t uid;
   gid_t gid;
 #endif
-#ifdef ON_WINDOWS
- #ifndef NO_HARDLINKS
+#ifndef NO_HARDLINKS
+ #ifdef ON_WINDOWS
   DWORD nlink;
- #endif
-#else
+ #else
   nlink_t nlink;
+ #endif
 #endif
 } file_t;
 

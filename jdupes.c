@@ -439,7 +439,9 @@ extern inline int getfilestats(file_t * const restrict file)
   file->device = s.st_dev;
   file->mtime = s.st_mtime;
   file->mode = s.st_mode;
+ #ifndef NO_HARDLINKS
   file->nlink = s.st_nlink;
+ #endif
  #ifndef NO_PERMS
   file->uid = s.st_uid;
   file->gid = s.st_gid;
@@ -833,15 +835,24 @@ static void grokdir(const char * const restrict dir,
           filecount++;
           progress++;
 
-	  /* store reverse lookup {device, inode} -> file */
-	  filerev = tsearch(newfile, &revtree, compare_revtree);
-	  if (!filerev) oom("grokdir() reverse lookup tree node");
-	  filerev = *(file_t **) filerev; /* get pointer from tree node */
-	  if (filerev == newfile) {
-	    LOUD(fprintf(stderr, "new reverse lookup for %s\n", newfile->filename->d_name));
+#ifndef NO_HARDLINKS
+	  /* store reverse lookup {device, inode} -> file
+	   * as this is use to detect hardlinked files,
+           * it is only needed if the link count is > 1 */
+	  if (newfile->nlink > 1) {
+	    filerev = tsearch(newfile, &revtree, compare_revtree);
+	    if (!filerev) oom("grokdir() reverse lookup tree node");
+	    
+	    filerev = *(file_t **) filerev; /* get pointer from tree node */
+	    if (filerev == newfile) {
+	      LOUD(fprintf(stderr, "new reverse lookup for %s\n", newfile->filename->d_name));
+	    } else {
+	      LOUD(fprintf(stderr, "known reverse lookup from %s to %s\n", newfile->filename->d_name, filerev->filename->d_name));
+	    }
 	  } else {
-	    LOUD(fprintf(stderr, "known reverse lookup from %s to %s\n", newfile->filename->d_name, filerev->filename->d_name));
+	    LOUD(fprintf(stderr, "skip reverse lookup, nlink < 2\n"));
 	  }
+#endif
 
         } else {
           LOUD(fprintf(stderr, "grokdir: not a regular file: %s\n", newfilename->d_name);)
