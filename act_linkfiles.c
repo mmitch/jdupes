@@ -251,11 +251,13 @@ extern void linkfiles(file_t *files, const int hard)
 #endif /* ON_WINDOWS */
           if (success) {
             if (!ISFLAG(flags, F_HIDEPROGRESS)) printf("%s %s\n", (hard ? "---->" : "-@@->"), dupename->d_name);
+#ifndef NO_HARDLINKS
             if (hard) {
               /* adjust link counts or the next file_has_changed() will fail */
               srcfile->nlink++;
               dupelist[x]->nlink--;
             }
+#endif
           } else {
             /* The link failed. Warn the user and put the link target back */
             if (!ISFLAG(flags, F_HIDEPROGRESS)) {
