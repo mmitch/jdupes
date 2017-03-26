@@ -439,7 +439,9 @@ extern inline int getfilestats(file_t * const restrict file)
   file->device = s.st_dev;
   file->mtime = s.st_mtime;
   file->mode = s.st_mode;
+ #ifndef NO_HARDLINKS
   file->nlink = s.st_nlink;
+ #endif
  #ifndef NO_PERMS
   file->uid = s.st_uid;
   file->gid = s.st_gid;
@@ -833,6 +835,7 @@ static void grokdir(const char * const restrict dir,
           filecount++;
           progress++;
 
+#ifndef NO_HARDLINKS
 	  /* store reverse lookup {device, inode} -> file
 	   * as this is use to detect hardlinked files,
            * it is only needed if the link count is > 1 */
@@ -865,10 +868,12 @@ static void grokdir(const char * const restrict dir,
 	    }
 	  } else {
 	    LOUD(fprintf(stderr, "skip reverse lookup, nlink < 2\n"));
-
+#endif /* NO_HARDLINKS */
 	    /* store file_t normally */
 	    *filelistp = newfile;
+#ifndef NO_HARDLINKS
 	  }
+#endif
 
         } else {
           LOUD(fprintf(stderr, "grokdir: not a regular file: %s\n", newfilename->d_name);)
